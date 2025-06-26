@@ -36,7 +36,7 @@ const showRandomQuote = function () {
 };
 
 
-const CreateAddQuoteForm = function () {
+const createAddQuoteForm = function () {
   
   let textInput = document.getElementById("newQuoteText");
   let categoryInput = document.getElementById("newQuoteCategory");
@@ -56,4 +56,4 @@ const CreateAddQuoteForm = function () {
   }
 };
 newOne.addEventListener("click", showRandomQuote);
-btn.onclick = CreateAddQuoteForm();
+btn.onclick = createAddQuoteForm();
