@@ -1,6 +1,6 @@
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newOne = document.getElementById("newQuote");
-
+const btn = document.getElementsByTagName("button");
 const quotes = [
   {
     text: "The only limit to our realization of tomorrow is our doubts of today.",
@@ -36,7 +36,7 @@ const showRandomQuote = function () {
 };
 
 
-const addQuote = function () {
+const CreateAddQuoteForm = function () {
   
   let textInput = document.getElementById("newQuoteText");
   let categoryInput = document.getElementById("newQuoteCategory");
@@ -56,3 +56,4 @@ const addQuote = function () {
   }
 };
 newOne.addEventListener("click", showRandomQuote);
+btn.onclick = CreateAddQuoteForm();
