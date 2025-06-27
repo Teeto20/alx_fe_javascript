@@ -86,8 +86,7 @@ function addQuote() {
 }
 newOne.addEventListener("click", showRandomQuote);
 
-const exportBtn = document.createElement("button");
-exportBtn.textContent = "Export Quotes";
+const exportBtn = document.getElementById("exportBtn");
 exportBtn.addEventListener("click", function () {
     const dataStr = JSON.stringify(quotes, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
