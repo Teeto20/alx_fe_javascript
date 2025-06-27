@@ -1,7 +1,7 @@
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newOne = document.getElementById("newQuote");
 
-const quotes = [
+const quotes = JSON.parse(localStorage.getItem('quotes')) || [
   {
     text: "The only limit to our realization of tomorrow is our doubts of today.",
     category: "Motivational",
@@ -15,6 +15,9 @@ const quotes = [
     category: "Life",
   },
 ];
+function saveQuotes() {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
 
 let lastQuoteIndex = -1;
 const showRandomQuote = function () {
@@ -34,7 +37,6 @@ const showRandomQuote = function () {
    <p><strong>Quote:</strong> ${quote.text}</p>
    <p><em>Category:</em> ${quote.category}</p> 
  `;
-localStorage.setItem("quotes", JSON.stringify(quotes));
 };
 
 
@@ -73,6 +75,7 @@ function addQuote() {
   console.log(text, category);
   if (textInput.value !== "" && categoryInput.value !== "") {
     quotes.push({ text, category });
+    saveQuotes();
     alert("Quote added successfully!");
     console.log(quotes);
     textInput.value = "";
