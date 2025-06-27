@@ -75,6 +75,8 @@ function addQuote() {
   if (textInput.value !== "" && categoryInput.value !== "") {
     quotes.push({ text, category });
     saveQuotes();
+    populateCategories(); // update dropdown
+    filterQuotes();
     alert("Quote added successfully!");
     console.log(quotes);
     textInput.value = "";
@@ -100,8 +102,6 @@ exportBtn.addEventListener("click", function () {
   URL.revokeObjectURL(url);
 });
 
-document.body.appendChild(exportBtn);
-
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
   fileReader.onload = function (event) {
@@ -112,5 +112,43 @@ function importFromJsonFile(event) {
   };
   fileReader.readAsText(event.target.files[0]);
 }
+const filterQuotes = function () {
+  const catFilter = document.getElementById("categoryFilter").value;
+  localStorage.setItem("selectedCategory", catFilter);
+  const display = document.getElementById("quoteDisplay");
+  display.innerHTML = "";
+  let filtered = [];
+  if (catFilter === "All Categories") {
+    filtered = quotes;
+  } else {
+    filtered = quotes.filter((q) => q.category === catFilter);
+  }
+  if (filtered.length === 0) {
+    display.innerHTML = "<p>No quotes found for this category.</p>";
+    return;
+  }
+  filtered.forEach((quote) => {
+    const quoteEl = document.createElement("div");
+    quoteEl.innerHTML = `<p><strong>Quote:</strong> "${quote.text}"</p><em>Category:</em> ${quote.category}<hr>`;
+    display.appendChild(quoteEl);
+  });
+};
+const populateCategories = function () {
+  const categorySet = new Set(quotes.map((q) => q.category));
+  const select = document.getElementById("categoryFilter");
+  select.innerHTML = '<option value="all">All Categories</option>';
 
-document.body.appendChild(importInput);
+  categorySet.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    select.appendChild(option);
+  });
+  const savedCategory = localStorage.getItem("selectedCategory");
+  if (savedCategory && [...categorySet].includes(savedCategory)) {
+    select.value = savedCategory;
+    filterQuotes();
+  }
+};
+populateCategories();
+

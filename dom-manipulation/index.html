@@ -12,6 +12,7 @@
     <hr />
     <h2>Add a New Quote</h2>
     <div id="form-container"></div>
+    <hr>
     <button id="exportBtn">Export Quotes</button>
     <input
       type="file"
@@ -19,6 +20,13 @@
       accept=".json"
       onchange="importFromJsonFile(event)"
     />
+    <hr>
+    <div>
+      <select id="categoryFilter" onchange="filterQuotes()">
+        <option value="all">All Categories</option>
+        <!-- Dynamically populated categories -->
+      </select>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
