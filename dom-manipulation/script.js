@@ -1,7 +1,7 @@
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newOne = document.getElementById("newQuote");
 
-const quotes = JSON.parse(localStorage.getItem('quotes')) || [
+const quotes = JSON.parse(localStorage.getItem("quotes")) || [
   {
     text: "The only limit to our realization of tomorrow is our doubts of today.",
     category: "Motivational",
@@ -16,7 +16,7 @@ const quotes = JSON.parse(localStorage.getItem('quotes')) || [
   },
 ];
 function saveQuotes() {
-  localStorage.setItem('quotes', JSON.stringify(quotes));
+  localStorage.setItem("quotes", JSON.stringify(quotes));
 }
 
 let lastQuoteIndex = -1;
@@ -39,7 +39,6 @@ const showRandomQuote = function () {
  `;
 };
 
-
 const createAddQuoteForm = function () {
   const formContainer = document.getElementById("form-container");
   const form = document.createElement("form");
@@ -57,10 +56,10 @@ const createAddQuoteForm = function () {
 `;
   formContainer.appendChild(form);
   form.addEventListener("submit", function (event) {
-  event.preventDefault(); // ⛔ Stops page reload
+    event.preventDefault(); // ⛔ Stops page reload
 
-  // Now safely add the quote
-});
+    // Now safely add the quote
+  });
 };
 
 createAddQuoteForm();
@@ -88,34 +87,30 @@ newOne.addEventListener("click", showRandomQuote);
 
 const exportBtn = document.getElementById("exportBtn");
 exportBtn.addEventListener("click", function () {
-    const dataStr = JSON.stringify(quotes, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+  const dataStr = JSON.stringify(quotes, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "quotes.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quotes.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 });
 
 document.body.appendChild(exportBtn);
-const importInput = document.createElement("input");
-importInput.type = "file";
-importInput.accept = ".json";
-importInput.onchange = "importFromJsonFile(event)"
 
- function importFromJsonFile(event) {
-    const fileReader = new FileReader();
-    fileReader.onload = function(event) {
-      const importedQuotes = JSON.parse(event.target.result);
-      quotes.push(...importedQuotes);
-      saveQuotes();
-      alert('Quotes imported successfully!');
-    };
-    fileReader.readAsText(event.target.files[0]);
-  }
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function (event) {
+    const importedQuotes = JSON.parse(event.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    alert("Quotes imported successfully!");
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
 
 document.body.appendChild(importInput);
