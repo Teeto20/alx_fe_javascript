@@ -154,10 +154,10 @@ const populateCategories = function () {
 };
 populateCategories();
 
-function fetchQuotesFromServer() {
-  fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
-    .then((response) => response.json())
-    .then((data) => {
+async function fetchQuotesFromServer() {
+  try{
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5");    
+    const data = await response.json();
       // Map the data into our quote format
       const apiQuotes = data.map((post) => ({
         text: post.title,
@@ -169,8 +169,10 @@ function fetchQuotesFromServer() {
       saveQuotes();
       populateCategories();
       filterQuotes();
-    })
-    .catch((error) => console.error("API Fetch Error:", error));
+    }
+    catch(error){
+       console.error("API Fetch Error:", error)
+    }
 }
 
 setInterval(fetchQuotesFromServer, 10000); // every 10 seconds
