@@ -1,7 +1,7 @@
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newOne = document.getElementById("newQuote");
 
-const quotes = JSON.parse(localStorage.getItem("quotes")) || [
+let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   {
     text: "The only limit to our realization of tomorrow is our doubts of today.",
     category: "Motivational",
@@ -77,6 +77,7 @@ function addQuote() {
     saveQuotes();
     populateCategories(); // update dropdown
     filterQuotes();
+    postQuoteToServer({ text, category });
     alert("Quote added successfully!");
     console.log(quotes);
     textInput.value = "";
@@ -100,6 +101,7 @@ exportBtn.addEventListener("click", function () {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  alert("quotes exported successfully");
 });
 
 function importFromJsonFile(event) {
@@ -152,3 +154,132 @@ const populateCategories = function () {
 };
 populateCategories();
 
+function fetchQuotesFromAPI() {
+  fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+    .then((response) => response.json())
+    .then((data) => {
+      // Map the data into our quote format
+      const apiQuotes = data.map((post) => ({
+        text: post.title,
+        category: "API",
+      }));
+
+      // Merge them with local quotes
+      quotes = [...apiQuotes, ...quotes];
+      saveQuotes();
+      populateCategories();
+      filterQuotes();
+    })
+    .catch((error) => console.error("API Fetch Error:", error));
+}
+
+setInterval(fetchQuotesFromAPI, 10000); // every 10 seconds
+
+function postQuoteToServer(quote) {
+  fetch("https://jsonplaceholder.typicode.com/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: quote.text,
+      body: quote.category,
+      userId: 1,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log("Posted to server:", data))
+    .catch((error) => console.error("POST error:", error));
+}
+
+function fetchAndMergeQuotes() {
+  fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+    .then((response) => response.json())
+    .then((serverData) => {
+      // Convert server posts to quote format
+      const serverQuotes = serverData.map((post) => ({
+        id: post.id,
+        text: post.title,
+        category: "API",
+      }));
+
+      // Load current local quotes
+      let localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+      // Remove local quotes with same id/text as server ones (conflict resolution)
+      const updatedQuotes = localQuotes.filter((local) => {
+        return !serverQuotes.some(
+          (server) =>
+            server.id && (local.id === server.id || local.text === server.text)
+        );
+      });
+
+      // Merge and save (server quotes take priority)
+      const mergedQuotes = [...serverQuotes, ...updatedQuotes];
+      localStorage.setItem("quotes", JSON.stringify(mergedQuotes));
+
+      // Update global array + UI
+      quotes = mergedQuotes;
+      populateCategories();
+      filterQuotes();
+
+      console.log("Quotes synchronized with server.");
+
+      let resolvedQuotes = [...localQuotes];
+      let conflictCount = 0;
+
+      serverQuotes.forEach((serverQuote) => {
+        const index = localQuotes.findIndex(
+          (local) =>
+            local.text === serverQuote.text || local.id === serverQuote.id
+        );
+
+        if (index !== -1) {
+          // Conflict detected
+          conflictCount++;
+
+          // Manual conflict resolution UI
+          const useServer = confirm(
+            `Conflict detected:\n\nLocal: "${localQuotes[index].text}"\nServer: "${serverQuote.text}"\n\nUse SERVER version?`
+          );
+
+          if (useServer) {
+            resolvedQuotes[index] = serverQuote;
+          }
+          // else keep local
+        } else {
+          // No conflict, just add
+          resolvedQuotes.push(serverQuote);
+        }
+      });
+
+      quotes = resolvedQuotes;
+      localStorage.setItem("quotes", JSON.stringify(quotes));
+      populateCategories();
+      filterQuotes();
+
+      if (conflictCount > 0) {
+        showNotification(`${conflictCount} conflict(s) resolved`, "orange");
+      } else {
+        showNotification(`Quotes updated from server`, "green");
+      }
+    })
+    .catch((error) => {
+      console.error("Failed to fetch server quotes:", error);
+      showNotification("Failed to sync quotes", "red");
+    });
+}
+
+// 🔁 Auto-sync with server every 30 seconds
+fetchAndMergeQuotes(); // Initial sync
+setInterval(fetchAndMergeQuotes, 30000);
+
+function showNotification(message, color = "green") {
+  const note = document.getElementById("notification");
+  note.textContent = message;
+  note.style.background = color;
+  note.style.display = "block";
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    note.style.display = "none";
+  }, 3000);
+}
