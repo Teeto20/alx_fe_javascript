@@ -155,24 +155,25 @@ const populateCategories = function () {
 populateCategories();
 
 async function fetchQuotesFromServer() {
-  try{
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5");    
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/posts?_limit=5"
+    );
     const data = await response.json();
-      // Map the data into our quote format
-      const apiQuotes = data.map((post) => ({
-        text: post.title,
-        category: "API",
-      }));
+    // Map the data into our quote format
+    const apiQuotes = data.map((post) => ({
+      text: post.title,
+      category: "API",
+    }));
 
-      // Merge them with local quotes
-      quotes = [...apiQuotes, ...quotes];
-      saveQuotes();
-      populateCategories();
-      filterQuotes();
-    }
-    catch(error){
-       console.error("API Fetch Error:", error)
-    }
+    // Merge them with local quotes
+    quotes = [...apiQuotes, ...quotes];
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+  } catch (error) {
+    console.error("API Fetch Error:", error);
+  }
 }
 
 setInterval(fetchQuotesFromServer, 10000); // every 10 seconds
@@ -261,7 +262,7 @@ function syncQuotes() {
       if (conflictCount > 0) {
         showNotification(`${conflictCount} conflict(s) resolved`, "orange");
       } else {
-        showNotification(`Quotes updated from server`, "green");
+        showNotification("Quotes synced with server!", "green");
       }
     })
     .catch((error) => {
