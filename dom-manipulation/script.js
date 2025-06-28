@@ -192,7 +192,7 @@ function postQuoteToServer(quote) {
     .catch((error) => console.error("POST error:", error));
 }
 
-function fetchAndMergeQuotes() {
+function syncQuotes() {
   fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
     .then((response) => response.json())
     .then((serverData) => {
@@ -271,8 +271,8 @@ function fetchAndMergeQuotes() {
 }
 
 // 🔁 Auto-sync with server every 30 seconds
-fetchAndMergeQuotes(); // Initial sync
-setInterval(fetchAndMergeQuotes, 30000);
+syncQuotes(); // Initial sync
+setInterval(syncQuotes, 30000);
 
 function showNotification(message, color = "green") {
   const note = document.getElementById("notification");
