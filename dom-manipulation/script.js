@@ -154,7 +154,7 @@ const populateCategories = function () {
 };
 populateCategories();
 
-function fetchQuotesFromAPI() {
+function fetchQuotesFromServer() {
   fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
     .then((response) => response.json())
     .then((data) => {
@@ -173,7 +173,7 @@ function fetchQuotesFromAPI() {
     .catch((error) => console.error("API Fetch Error:", error));
 }
 
-setInterval(fetchQuotesFromAPI, 10000); // every 10 seconds
+setInterval(fetchQuotesFromServer, 10000); // every 10 seconds
 
 function postQuoteToServer(quote) {
   fetch("https://jsonplaceholder.typicode.com/posts", {
